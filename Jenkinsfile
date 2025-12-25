@@ -9,8 +9,8 @@ pipeline {
             steps {
                 sh '''
                 javac -version
-                javac src/main/java/com/example/HealthCheckMain.java
-                java -cp src/main/java com.example.HealthCheckMain
+                javac src/main/java/com/example/HealthCheckMain.java src/test/java/com/example/HealthCheckTest.java
+                java -cp src/main/java:src/test/java com.example.HealthCheckMain
                 '''
             }
         }
