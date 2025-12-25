@@ -15,8 +15,7 @@ public class HealthCheckTest {
 
     public static void testEndpointHealthCheck() throws Exception {
         System.out.println("Testing endpoint: " + ENDPOINT_URL);
-        
-        try {
+        throw new Exception("Health check test failed intentionally");
             URL url = new URL(ENDPOINT_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
