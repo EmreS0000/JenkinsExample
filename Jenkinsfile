@@ -3,6 +3,9 @@ pipeline {
 
     stages {
         stage('Health Check') {
+            when {
+                branch 'main'
+            }
             steps {
                 sh '''
                 javac -version
