@@ -3,31 +3,35 @@ pipeline {
 
     stages {
         stage('Health Check') {
-            when {
-                anyOf {
-                    branch 'main'
-                    expression { env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'origin/main' }
-                }
-            }
             steps {
-                sh '''
-                javac -version
-                javac src/test/java/com/example/HealthCheckTest.java
-                java -cp src/test/java com.example.HealthCheckTest
-                '''
+                script {
+                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ''
+                    def isMain = branch == 'main' || branch == 'origin/main' || branch == 'refs/heads/main'
+                    if (isMain) {
+                        sh '''
+                        javac -version
+                        javac src/test/java/com/example/HealthCheckTest.java
+                        java -cp src/test/java com.example.HealthCheckTest
+                        '''
+                    } else {
+                        echo "Skipping Health Check on branch: ${branch}"
+                    }
+                }
             }
         }
 
         stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'main'
-                    expression { env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'origin/main' }
-                }
-            }
             steps {
-                echo "Deploying application..."
-                echo "Deploy successful!"
+                script {
+                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ''
+                    def isMain = branch == 'main' || branch == 'origin/main' || branch == 'refs/heads/main'
+                    if (isMain) {
+                        echo "Deploying application..."
+                        echo "Deploy successful!"
+                    } else {
+                        echo "Skipping Deploy on branch: ${branch}"
+                    }
+                }
             }
         }
     }
