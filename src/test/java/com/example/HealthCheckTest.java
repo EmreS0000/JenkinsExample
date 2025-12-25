@@ -21,4 +21,9 @@ public class HealthCheckTest {
         System.out.println("Health check passed!");
         connection.disconnect();
     }
+
+    public static void main(String[] args) throws Exception {
+        runHealthCheck();
+        System.out.println("Main branch: test finished with 200");
+    }
 }
