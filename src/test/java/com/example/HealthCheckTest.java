@@ -8,14 +8,10 @@ public class HealthCheckTest {
     private static final String ENDPOINT_URL = "https://example.com";
     private static final int EXPECTED_SUCCESS_CODE = 200;
 
-    public static void main(String[] args) throws Exception {
-        testEndpointHealthCheck();
-        testEndpointAvailability();
-    }
-
     public static void testEndpointHealthCheck() throws Exception {
         System.out.println("Testing endpoint: " + ENDPOINT_URL);
-        throw new Exception("Health check test failed intentionally");
+        
+        try {
             URL url = new URL(ENDPOINT_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

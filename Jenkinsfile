@@ -7,8 +7,8 @@ pipeline {
                 sh '''
                 javac -version
                 cd src/test/java
-                javac com/example/HealthCheckTest.java
-                java -cp . com.example.HealthCheckTest
+                javac com/example/HealthCheckTest.java com/example/HealthCheckMain.java
+                java -cp . com.example.HealthCheckMain
                 '''
             }
         }
