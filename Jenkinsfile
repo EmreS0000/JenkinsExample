@@ -4,7 +4,10 @@ pipeline {
     stages {
         stage('Health Check') {
             when {
-                branch 'main'
+                anyOf {
+                    branch 'main'
+                    expression { env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'origin/main' }
+                }
             }
             steps {
                 sh '''
@@ -17,7 +20,10 @@ pipeline {
 
         stage('Deploy') {
             when {
-                branch 'main'
+                anyOf {
+                    branch 'main'
+                    expression { env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'origin/main' }
+                }
             }
             steps {
                 echo "Deploying application..."
