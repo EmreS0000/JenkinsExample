@@ -7,8 +7,8 @@ pipeline {
                 sh '''
                 javac -version
                 cd src/test/java
-                javac -cp /usr/share/java/junit4.jar com/example/HealthCheckTest.java
-                java -cp /usr/share/java/junit4.jar:/usr/share/java/hamcrest-core.jar:. org.junit.runner.JUnitCore com.example.HealthCheckTest
+                javac com/example/HealthCheckTest.java
+                java -cp . com.example.HealthCheckTest
                 '''
             }
         }

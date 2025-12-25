@@ -1,70 +1,73 @@
 package com.example;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class HealthCheckTest {
 
     private static final String ENDPOINT_URL = "https://example.com";
     private static final int EXPECTED_SUCCESS_CODE = 200;
-    private static final int TIMEOUT_SECONDS = 30;
 
-    @Test
-    public void testEndpointHealthCheck() throws Exception {
+    public static void main(String[] args) throws Exception {
+        testEndpointHealthCheck();
+        testEndpointAvailability();
+    }
+
+    public static void testEndpointHealthCheck() throws Exception {
         System.out.println("Testing endpoint: " + ENDPOINT_URL);
         
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet(ENDPOINT_URL);
-        
         try {
-            HttpResponse response = httpClient.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+            URL url = new URL(ENDPOINT_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(30000);
+            connection.setReadTimeout(30000);
             
+            int statusCode = connection.getResponseCode();
             System.out.println("Received status code: " + statusCode);
             
             if (statusCode == 400) {
-                fail("Endpoint returned 400 Bad Request");
+                throw new Exception("Endpoint returned 400 Bad Request");
             } else if (statusCode == 500) {
-                fail("Endpoint returned 500 Internal Server Error");
+                throw new Exception("Endpoint returned 500 Internal Server Error");
             }
             
-            assertEquals("Expected status code 200", EXPECTED_SUCCESS_CODE, statusCode);
+            if (statusCode != EXPECTED_SUCCESS_CODE) {
+                throw new Exception("Expected status code 200, got " + statusCode);
+            }
             
             System.out.println("Health check passed successfully!");
+            connection.disconnect();
             
         } catch (Exception e) {
             System.err.println("Failed to connect to endpoint: " + e.getMessage());
-            fail("Unable to reach endpoint: " + e.getMessage());
-        } finally {
-            httpClient.close();
+            throw e;
         }
     }
     
-    @Test
-    public void testEndpointAvailability() throws Exception {
+    public static void testEndpointAvailability() throws Exception {
         System.out.println("Testing endpoint availability: " + ENDPOINT_URL);
         
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet(ENDPOINT_URL);
-        
         try {
-            HttpResponse response = httpClient.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+            URL url = new URL(ENDPOINT_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(30000);
+            connection.setReadTimeout(30000);
+            
+            int statusCode = connection.getResponseCode();
             
             // Endpoint should be reachable (any 2xx or 3xx status code)
-            assertTrue("Endpoint should be reachable", 
-                      statusCode >= 200 && statusCode < 400);
+            if (statusCode < 200 || statusCode >= 400) {
+                throw new Exception("Endpoint not reachable with status: " + statusCode);
+            }
             
             System.out.println("Endpoint is available with status: " + statusCode);
+            connection.disconnect();
             
         } catch (Exception e) {
-            fail("Endpoint is not available: " + e.getMessage());
-        } finally {
-            httpClient.close();
+            System.err.println("Endpoint is not available: " + e.getMessage());
+            throw e;
         }
     }
 }
